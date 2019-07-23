@@ -1,0 +1,15 @@
+execute with:
+
+mvn spring-boot:run -Dspring.profiles.active=local
+
+POST:
+
+http://localhost:8080/api/accounts
+
+json body:
+{
+	"label" : "mytest",
+	"type" : "checking",
+	"owners" : [ "1" ],
+	"iban" : "myiban"
+}
