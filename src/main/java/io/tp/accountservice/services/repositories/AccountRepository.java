@@ -1,6 +1,6 @@
-package io.tp.services.repositories;
+package io.tp.accountservice.services.repositories;
 
-import io.tp.services.model.Account;
+import io.tp.accountservice.services.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

@@ -1,10 +1,10 @@
-package io.tp.services;
+package io.tp.accountservice.services;
 
-import io.tp.services.exceptions.BusinessException;
-import io.tp.services.exceptions.ErrorCode;
-import io.tp.services.mapper.AccountMapper;
-import io.tp.services.model.Account;
-import io.tp.services.repositories.AccountRepository;
+import io.tp.accountservice.rest.model.Account;
+import io.tp.accountservice.services.exceptions.BusinessException;
+import io.tp.accountservice.services.exceptions.ErrorCode;
+import io.tp.accountservice.services.mapper.AccountMapper;
+import io.tp.accountservice.services.repositories.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,28 +29,28 @@ public class AccountService {
     }
 
     @Transactional(readOnly = true)
-    public List<io.tp.rest.model.Account> getAccounts() {
-        final List<Account> accountModels = accountRepository.findAll();
+    public List<Account> getAccounts() {
+        final List<io.tp.accountservice.services.model.Account> accountModels = accountRepository.findAll();
         return accountMapper.map(accountModels);
     }
 
-    public io.tp.rest.model.Account get(String id) {
-        Account accountModel = accountRepository.findById(id);
+    public io.tp.accountservice.rest.model.Account get(String id) {
+        io.tp.accountservice.services.model.Account accountModel = accountRepository.findById(id);
         return accountMapper.map(accountModel);
     }
 
-    public String create(io.tp.rest.model.Account account) {
+    public String create(io.tp.accountservice.rest.model.Account account) {
         if (!isValidCreateAccountCommand(account)) {
             throw new BusinessException(ErrorCode.MISSING_CREATE_ACCOUNT_INFORMATION);
         }
-        Account accountModel = accountMapper.map(account);
+        io.tp.accountservice.services.model.Account accountModel = accountMapper.map(account);
         accountRepository.save(accountModel);
         return accountModel.getId();
     }
 
-    private boolean isValidCreateAccountCommand(@RequestBody io.tp.rest.model.Account account) {
+    private boolean isValidCreateAccountCommand(@RequestBody io.tp.accountservice.rest.model.Account account) {
         List<Boolean> validationList = new ArrayList<>();
-        validationList.add(account.getType() != null);
+        validationList.add(account.getAccountType() != null);
         validationList.add(!CollectionUtils.isEmpty(account.getOwners()));
         validationList.add(!StringUtils.isEmpty(account.getIban()));
         if (account.getMoneyAmount() != null) {
@@ -61,7 +61,7 @@ public class AccountService {
     }
 
     public void delete(String id) {
-        Account account = accountRepository.findById(id);
+        io.tp.accountservice.services.model.Account account = accountRepository.findById(id);
         accountRepository.delete(account);
     }
 }

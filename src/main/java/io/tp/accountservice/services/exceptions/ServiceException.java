@@ -1,4 +1,4 @@
-package io.tp.services.exceptions;
+package io.tp.accountservice.services.exceptions;
 
 
 import lombok.Getter;

@@ -64,21 +64,11 @@
 
         <!-- Database -->
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
 			<scope>runtime</scope>
+			<version>1.4.199</version>
 		</dependency>
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>9.4-1201-jdbc41</version>
-            <scope>runtime</scope>
-        </dependency>
 
 		<!-- OpenAPI -->
         <dependency>
@@ -129,18 +119,21 @@
 							<inputSpec>${project.basedir}/src/main/resources/api/accounts-api.yaml</inputSpec>
 							<output>${project.build.directory}/generated-sources</output>
 							<generatorName>spring</generatorName>
+							<library>spring-boot</library>
 							<generateApiTests>false</generateApiTests>
 							<generateModelTests>false</generateModelTests>
 							<generateSupportingFiles>true</generateSupportingFiles>
 							<supportingFilesToGenerate>ApiUtil.java</supportingFilesToGenerate>
-							<groupId>${project.groupId}</groupId>
-							<artifactId>${project.artifactId}</artifactId>
-							<artifactVersion>${project.version}</artifactVersion>
-							<apiPackage>${project.groupId}.${project.artifactId}.api</apiPackage>
-							<modelPackage>${project.groupId}.${project.artifactId}.model</modelPackage>
+							<apiPackage>${project.groupId}.${project.artifactId}.rest.sapi</apiPackage>
+							<modelPackage>${project.groupId}.${project.artifactId}.rest.model</modelPackage>
+							<configHelp>false</configHelp>
 							<configOptions>
 								<interfaceOnly>true</interfaceOnly>
 								<sourceFolder>src/gen/java/main</sourceFolder>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+								<java8>false</java8>
+								<interfaceOnly>true</interfaceOnly>
+								<dateLibrary>java8</dateLibrary>
 							</configOptions>
 						</configuration>
 					</execution>

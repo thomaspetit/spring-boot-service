@@ -1,4 +1,4 @@
-package io.tp.services.exceptions;
+package io.tp.accountservice.services.exceptions;
 
 public class BusinessException extends ServiceException {
     public BusinessException(ErrorCode errorCode) {

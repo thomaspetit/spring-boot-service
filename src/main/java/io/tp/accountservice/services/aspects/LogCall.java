@@ -1,4 +1,4 @@
-package io.tp.services.aspects;
+package io.tp.accountservice.services.aspects;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

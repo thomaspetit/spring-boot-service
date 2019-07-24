@@ -1,4 +1,4 @@
-package io.tp;
+package io.tp.accountservice;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;

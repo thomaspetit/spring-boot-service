@@ -1,4 +1,4 @@
-package io.tp.services.model;
+package io.tp.accountservice.services.model;
 
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;

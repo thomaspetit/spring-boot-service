@@ -5,14 +5,17 @@ info:
   license:
     name: MIT
 servers:
-- url: http://accounts.tp.io/v1
+  - url: http://accounts.tp.io/v1
 paths:
   /accounts:
     get:
       summary: Get list of accounts
       operationId: listAccounts
       tags:
-      - accounts
+        - accounts
+      parameters:
+        - $ref: "#/components/parameters/h_traceId"
+        - $ref: "#/components/parameters/h_spanId"
       responses:
         '200':
           description: Expected response to a valid request
@@ -25,12 +28,22 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResource"
     post:
       summary: Create a new account
       operationId: createAccounts
       tags:
-      - accounts
+        - accounts
+      parameters:
+        - $ref: "#/components/parameters/h_traceId"
+        - $ref: "#/components/parameters/h_spanId"
+      requestBody:
+        description: A valid account
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Account'
       responses:
         '200':
           description: Object created succesfully
@@ -39,20 +52,18 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResource"
   /accounts/{accountId}:
     get:
-      summary: Get Account Details
+      summary: Get account details
       operationId: showAccountById
       tags:
-      - accounts
+        - accounts
       parameters:
-      - name: accountId
-        in: path
-        required: true
-        description: The id of the account to retrieve
-        schema:
-          type: string
+        - $ref: "#/components/parameters/h_traceId"
+        - $ref: "#/components/parameters/h_spanId"
+
+        - $ref: "#/components/parameters/accountId"
       responses:
         '200':
           description: Expected response to a valid request
@@ -65,41 +76,107 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Error"
+                $ref: "#/components/schemas/ErrorResource"
+    delete:
+      summary: Delete an account
+      operationId: deleteAccountById
+      tags:
+        - accounts
+      parameters:
+        - $ref: "#/components/parameters/h_traceId"
+        - $ref: "#/components/parameters/h_spanId"
+
+        - $ref: "#/components/parameters/accountId"
+      responses:
+        '200':
+          description: Expected response to a valid request
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResource"
 components:
+  parameters:
+    accountId:
+      name: accountId
+      in: path
+      required: true
+      description: The id of the account to retrieve
+      schema:
+        type: string
+    h_traceId:
+      name: X-B3-TraceId
+      in: header
+      schema:
+        type: string
+        maxLength: 32
+        minLength: 16
+        pattern: "[a-z0-9]{16,32}"
+      description: |
+        Randomly generated, unique identifier for a trace, set on all spans within it.
+
+        Encoded as 16 or 32 lowercase hex characters in big endian byte order,
+        corresponding to 64 or 128 bits.
+        For example, a 128bit trace ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
+    h_spanId:
+      name: X-B3-SpanId
+      in: header
+      schema:
+        type: string
+        maxLength: 32
+        minLength: 16
+        pattern: "[a-z0-9]{16,32}"
+      description: |
+        Unique identifier for a span.
+
+        Encoded as 16 or 32 lowercase hex characters in big endian byte order,
+        corresponding to 64 or 128 bits.
+        For example, a 128bit span ID looks like 4e441824ec2b6a44ffdc9bb9a6453df3
   schemas:
     Account:
       required:
-      - id
+        - id
       properties:
         id:
           type: integer
           format: int64
         label:
           type: string
-        type:
+        accountType:
           type: string
+          enum: [checkings, savings]
         owners:
           type: array
           items:
             type: string
         iban:
           type: string
-        tag:
-          type: string
         moneyAmount:
+          $ref: '#/components/schemas/MoneyAmount'
+        tag:
           type: string
     Accounts:
       type: array
       items:
         $ref: "#/components/schemas/Account"
-    Error:
+    MoneyAmount:
       required:
-      - code
-      - message
+        - amount
+        - currency
+      properties:
+        amount:
+          type: number
+          format: float
+        currency:
+          type: string
+          enum: [EUR, USD]
+    ErrorResource:
+      required:
+        - code
+        - message
       properties:
         code:
-          type: integer
-          format: int32
+          type: string
         message:
           type: string

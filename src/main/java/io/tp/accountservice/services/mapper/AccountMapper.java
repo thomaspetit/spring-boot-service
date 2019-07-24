@@ -1,8 +1,8 @@
-package io.tp.services.mapper;
+package io.tp.accountservice.services.mapper;
 
-import io.tp.services.model.MoneyAmount;
-import io.tp.services.model.Account;
-import io.tp.services.model.AccountType;
+import io.tp.accountservice.services.model.MoneyAmount;
+import io.tp.accountservice.services.model.Account;
+import io.tp.accountservice.services.model.AccountType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -17,8 +17,8 @@ public class AccountMapper {
     public AccountMapper() {
     }
 
-    public List<io.tp.rest.model.Account> map(List<Account> accounts) {
-        List<io.tp.rest.model.Account> resources = new ArrayList<>();
+    public List<io.tp.accountservice.rest.model.Account> map(List<Account> accounts) {
+        List<io.tp.accountservice.rest.model.Account> resources = new ArrayList<>();
 
         for (Account account : accounts) {
             resources.add(map(account));
@@ -26,23 +26,23 @@ public class AccountMapper {
         return resources;
     }
 
-    public io.tp.rest.model.Account map(Account account) {
-        io.tp.rest.model.Account resource = new io.tp.rest.model.Account();
+    public io.tp.accountservice.rest.model.Account map(Account account) {
+        io.tp.accountservice.rest.model.Account resource = new io.tp.accountservice.rest.model.Account();
         resource.setLabel(account.getLabel());
-        resource.setType( io.tp.rest.model.Account.Type.fromValue( account.getType().name().toLowerCase() ) );
+        resource.setAccountType( io.tp.accountservice.rest.model.Account.AccountTypeEnum.fromValue( account.getType().name().toLowerCase() ) );
         resource.setOwners(account.getOwnerIds());
         resource.setIban(account.getIban());
 
-        io.tp.rest.model.MoneyAmount moneyAmount = new io.tp.rest.model.MoneyAmount();
+        io.tp.accountservice.rest.model.MoneyAmount moneyAmount = new io.tp.accountservice.rest.model.MoneyAmount();
         moneyAmount.setAmount( account.getBalance().getAmount().floatValue() );
-        moneyAmount.setCurrency( account.getBalance().getCurrency().toString() );
+        moneyAmount.setCurrency(io.tp.accountservice.rest.model.MoneyAmount.CurrencyEnum.fromValue(account.getBalance().getCurrency().toString() ) );
         resource.setMoneyAmount( moneyAmount );
 
         return resource;
     }
 
-    public Account map(io.tp.rest.model.Account account) {
-        AccountType accountType = AccountType.fromValue( account.getType().name().toLowerCase() );
+    public Account map(io.tp.accountservice.rest.model.Account account) {
+        AccountType accountType = AccountType.fromValue( account.getAccountType().name().toLowerCase() );
 
         Account model = new Account();
         if (StringUtils.isEmpty(account.getLabel())) {

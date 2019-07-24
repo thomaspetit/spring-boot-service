@@ -1,7 +1,7 @@
-package io.tp;
+package io.tp.accountservice;
 
-import io.tp.rest.model.ErrorResource;
-import io.tp.services.exceptions.*;
+import io.tp.accountservice.rest.model.ErrorResource;
+import io.tp.accountservice.services.exceptions.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @ControllerAdvice
 public class ExceptionHandler {
@@ -26,7 +27,7 @@ public class ExceptionHandler {
     @ResponseBody
     public ErrorResource handleUnknownResource(UnknownResourceException e) {
         LOGGER.info(e.getIdentifier() + " " + e.getErrorCode().name() + " " + e.getMessage(), e);
-        return new ErrorResource(e.getIdentifier(), localizeMessage(e));
+        return createErrorResource(e);
     }
 
     @ResponseStatus(value = HttpStatus.BAD_REQUEST)
@@ -34,7 +35,7 @@ public class ExceptionHandler {
     @ResponseBody
     public ErrorResource handleBusinessException(BusinessException e) {
         LOGGER.info(e.getIdentifier() + " " + e.getErrorCode().name() + " " + e.getMessage(), e);
-        return new ErrorResource(e.getIdentifier(), localizeMessage(e));
+        return createErrorResource(e);
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
@@ -42,16 +43,27 @@ public class ExceptionHandler {
     @ResponseBody
     public ErrorResource handleTechnicalException(TechnicalException e) {
         LOGGER.error(e.getIdentifier() + " " + e.getErrorCode().name() + " " + e.getMessage(), e);
-        return new ErrorResource(e.getIdentifier(), localizeMessage(e));
+        return createErrorResource(e);
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
-    @org.springframework.web.bind.annotation.ExceptionHandler(Exception.class)
+    @org.springframework.web.bind.annotation.ExceptionHandler(RuntimeException.class)
     @ResponseBody
     public ErrorResource handleUnknownException(Exception e) {
         final TechnicalException technicalException = new TechnicalException(ErrorCode.SERVICE_UNAVAILABLE);
         LOGGER.error(technicalException.getIdentifier() + " " + technicalException.getErrorCode().name() + " " + e.getMessage(), e);
-        return new ErrorResource(technicalException.getIdentifier(), localizeMessage(technicalException));
+
+        ErrorResource errorResource = new ErrorResource();
+        errorResource.setCode(UUID.randomUUID().toString());
+        errorResource.setMessage(ErrorCode.SERVICE_UNAVAILABLE.name());
+        return errorResource;
+    }
+
+    private ErrorResource createErrorResource(ServiceException e) {
+        ErrorResource errorResource = new ErrorResource();
+        errorResource.setCode(e.getIdentifier());
+        errorResource.setMessage(localizeMessage(e));
+        return errorResource;
     }
 
     private String localizeMessage(ServiceException e) {
